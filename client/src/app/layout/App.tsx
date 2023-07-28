@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import Catalog from "../../features/catalog/Catalog";
-import { Container, CssBaseline, createTheme, ThemeProvider} from "@mui/material";
+import { useState } from "react";
+import { Container, CssBaseline, createTheme, ThemeProvider, Typography} from "@mui/material";
 import Header from "./Header";
 import { Outlet } from "react-router-dom";
 
@@ -29,6 +28,7 @@ export default function App() {
       <Container>
         <Outlet />
       </Container>
+      <Typography variant="h1"> Testing </Typography>
     </ThemeProvider>
   );
 }
