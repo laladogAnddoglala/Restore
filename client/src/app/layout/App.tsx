@@ -28,7 +28,6 @@ export default function App() {
       <Container>
         <Outlet />
       </Container>
-      <Typography variant="h1"> Testing </Typography>
     </ThemeProvider>
   );
 }
