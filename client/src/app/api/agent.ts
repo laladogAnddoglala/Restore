@@ -1,20 +1,37 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
+import { router } from "../router/Routes";
+
+
+const sleep = () => new Promise(resolve => setTimeout(resolve, 300));
 
 axios.defaults.baseURL = "http://localhost:5000/api/";
 
-axios.interceptors.response.use(response => { return response },
+axios.interceptors.response.use(async response => { 
+    await sleep();
+    return response },
     (error: AxiosError) => {
         const { data, status } = error.response as AxiosResponse;
         switch (status) {
             case 400:
+                if (data.errors) {
+                    const modelStateError: string[] = [];
+                    for (const key in data.errors) {
+                        if (data.errors[key]) {
+                            modelStateError.push(data.errors[key])
+                        }
+                    }
+                    throw modelStateError.flat();
+                }
                 toast.error(data.title);
                 break;
             case 401:
                 toast.error(data.title);
                 break;
             case 500:
-                toast.error(data.title);
+                router.navigate('/server-error', {state: {error: data}}); //Page redirection is asynchronous
+                break;
+            default:
                 break;
         }
 

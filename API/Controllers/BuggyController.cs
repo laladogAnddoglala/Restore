@@ -10,7 +10,7 @@ namespace API.Controllers
             return NotFound();
         }
 
-        [HttpGet("bad-request")]
+        [HttpGet("bad-request")] //400
         public ActionResult GetBadRequest()
         {
             return BadRequest(new ProblemDetails{Title = "This is a bad request"});
@@ -22,7 +22,7 @@ namespace API.Controllers
             return Unauthorized();
         }
 
-        [HttpGet("validation-error")]
+        [HttpGet("validation-error")] //400
         public ActionResult GetValidationError()
         {
             ModelState.AddModelError("Problem1", "First error");
