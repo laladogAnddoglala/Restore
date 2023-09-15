@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useStoreContext } from "../context/StoreContext";
 import { getCookie } from "../util/util";
 import agent from "../api/agent";
+import LoadingComponent from "./LoadingComponent";
 
 export default function App() {
   const {setBasket} = useStoreContext(); //Destructuring
@@ -38,6 +39,8 @@ export default function App() {
   function handleThemeChange() {
     setDarkMode(!darkMode);
   }
+
+  if (loading) return <LoadingComponent message="Initializing..."></LoadingComponent>
 
   return (
     <ThemeProvider theme={theme}>
