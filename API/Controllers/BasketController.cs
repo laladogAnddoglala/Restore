@@ -57,7 +57,7 @@ namespace API.Controllers
             return await _context.Baskets
                 .Include(i => i.Items)
                 .ThenInclude(p => p.Product)
-                .FirstOrDefaultAsync(b => b.BuyerId == Request.Cookies["buyerId"]);
+                .FirstOrDefaultAsync(b => b.BuyerId == Request.Cookies["buyerId"]); // Find by buyerId in cookies
         }
 
         private Basket CreateBasket()
