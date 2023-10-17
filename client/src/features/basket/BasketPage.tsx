@@ -6,9 +6,13 @@ import agent from "../../app/api/agent";
 import { LoadingButton } from "@mui/lab";
 import BasketSummary from "./BasketSummary";
 import { Link } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+import { removeItem, setBasket } from "./basketSlice";
 
 export default function BasketPage() {
-    const {basket, setBasket, removeItem} = useStoreContext();
+    // const {basket, setBasket, removeItem} = useStoreContext(); // React context
+    const {basket} = useAppSelector(state => state.basket);  // Redux
+    const dispatch = useAppDispatch();
     const [status, setStatus] = useState({
         loading: false,
         name: ''
@@ -17,7 +21,7 @@ export default function BasketPage() {
     function handleAddItem(productId: number, name: string) {
         setStatus({ loading: true, name: name });
         agent.Basket.addItem(productId)             
-            .then((basket) => setBasket(basket))                   // Modify state after backend basket updated 
+            .then(basket => dispatch(setBasket(basket)))  // This is action creater  // Modify state after backend basket updated 
             .catch((err) => console.log(err))
             .finally(() => setStatus({ loading: false, name: '' }))
     }
@@ -25,7 +29,7 @@ export default function BasketPage() {
     function handleRemoveItem(productId: number, quantity = 1, name: string) {
         setStatus({ loading: true, name: name });
         agent.Basket.removeItem(productId, quantity)
-            .then(() => removeItem(productId, quantity))           // Modify state after backend basket updated 
+            .then(() => dispatch(removeItem({productId, quantity})))  // This is action creater  // Modify state after backend basket updated 
             .catch((err) => console.log(err))
             .finally(() => setStatus({ loading: false, name: '' }))
     }

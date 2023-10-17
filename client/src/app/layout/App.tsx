@@ -19,7 +19,7 @@ export default function App() {
     const buyerId = getCookie('buyerId');
     if (buyerId) {
       agent.Basket.get()
-        .then(basket => dispatch(setBasket(basket)))
+        .then(basket => dispatch(setBasket(basket))) // Give dispatch an action
         .catch(error => console.log(error))
         .finally(() => setLoading(false));
     } else {
