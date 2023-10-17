@@ -16,8 +16,8 @@ export default function BasketPage() {
 
     function handleAddItem(productId: number, name: string) {
         setStatus({ loading: true, name: name });
-        agent.Basket.addItem(productId)
-            .then((basket) => setBasket(basket))
+        agent.Basket.addItem(productId)             
+            .then((basket) => setBasket(basket))                   // Modify state after backend basket updated 
             .catch((err) => console.log(err))
             .finally(() => setStatus({ loading: false, name: '' }))
     }
@@ -25,7 +25,7 @@ export default function BasketPage() {
     function handleRemoveItem(productId: number, quantity = 1, name: string) {
         setStatus({ loading: true, name: name });
         agent.Basket.removeItem(productId, quantity)
-            .then(() => removeItem(productId, quantity))
+            .then(() => removeItem(productId, quantity))           // Modify state after backend basket updated 
             .catch((err) => console.log(err))
             .finally(() => setStatus({ loading: false, name: '' }))
     }
