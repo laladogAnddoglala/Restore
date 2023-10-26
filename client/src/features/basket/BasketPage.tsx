@@ -1,6 +1,5 @@
 import { Box, Button, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { Add, Delete, Remove } from "@mui/icons-material";
-import { useStoreContext } from "../../app/context/StoreContext";
 import { useState } from "react";
 import agent from "../../app/api/agent";
 import { LoadingButton } from "@mui/lab";
@@ -11,7 +10,7 @@ import { removeItem, setBasket } from "./basketSlice";
 
 export default function BasketPage() {
     // const {basket, setBasket, removeItem} = useStoreContext(); // React context
-    const {basket} = useAppSelector(state => state.basket);  // Redux
+    const {basket} = useAppSelector(state => state.basket);  // Redux store
     const dispatch = useAppDispatch();
     const [status, setStatus] = useState({
         loading: false,

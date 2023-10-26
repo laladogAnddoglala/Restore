@@ -14,6 +14,12 @@ export const store = configureStore({
     }
 })
 
+/*
+Purpose: To give you a ready-to-use hook in your React components 
+to select state from the Redux store with type checking. This helps 
+catch type-related errors at compile-time rather than runtime. In 
+short, is for Typescript type safty check.
+*/ 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
