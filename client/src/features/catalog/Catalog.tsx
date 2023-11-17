@@ -1,18 +1,16 @@
-import { Product } from "../../app/models/product";
 import ProductList from "./ProductList";
-import { useState, useEffect } from "react";
-import agent from "../../app/api/agent";
+import { useEffect } from "react";
 import LoadingComponent from "../../app/layout/LoadingComponent";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+import { productSelectors } from "./catalogSlice";
 
 export default function Catalog() {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [Loading, setLoading] = useState(true);
+    const products = useAppSelector(productSelectors.selectAll); // Get products from catalog state
+    const {productsLoaded} = useAppSelector(state => state.catalog); // Still from catalog state
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
-        agent.Catalog.list()
-        .then(products => setProducts(products))
-        .catch(error => console.log(error))
-        .finally(() => setLoading(false));
+        
     }, [])
 
     if (Loading) return <LoadingComponent message="loading products..."/>

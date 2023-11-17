@@ -15,7 +15,7 @@ const initialState: BasketState = {
 // Add Basket Item AsyncThunk action
 export const addBasketItemAsync = createAsyncThunk<Basket, {productId: number, quantity?: number}>( // Basket is the return type
     'basket/addBasketItemAsync',    // Action type
-    async ({productId, quantity = 1}) => {                      // Match the agurement type
+    async ({productId, quantity}) => {                      // Match the agurement type
         try {
             return await agent.Basket.addItem(productId, quantity);  // Add item with API
         } catch (error) {
@@ -25,7 +25,7 @@ export const addBasketItemAsync = createAsyncThunk<Basket, {productId: number, q
 )
 
 // Remove Basket Item AsyncThunk action
-export const removeBasketItemAsync = createAsyncThunk<void, {productId: number, quantity?: number}>(
+export const removeBasketItemAsync = createAsyncThunk<void, {productId: number, quantity: number, name?: string}>(
     'basket/removeBasketItemAsync',
     async ({productId, quantity = 1}) => {
         try {
@@ -42,15 +42,6 @@ export const basketSlice = createSlice ({
     reducers: {
         setBasket: (state, action) => {     // Action type is basket/setBasket, action creator is setBasket, and this whole is action-type-specific case reducers
             state.basket = action.payload   // state is from redux store, action is created and dispatched from the component 
-        },
-        removeItem: (state, action) => {    
-            const {productId, quantity} = action.payload;
-            const ItemIndex = state.basket?.items.findIndex(i => i.productId === productId);
-            if (ItemIndex === -1 || ItemIndex === undefined) return;    // Safety check, in case basket is empty
-            state.basket!.items[ItemIndex].quantity -= quantity;
-            if (state.basket?.items[ItemIndex].quantity === 0) {
-                state.basket.items.splice(ItemIndex, 1); // Remove item from basket
-            }           
         }
     },
     extraReducers: (builder => {
@@ -62,14 +53,27 @@ export const basketSlice = createSlice ({
             console.log(action);
             state.basket = action.payload;  // Updata basket
             state.status = 'idle';
-        })
-        builder.addCase(addBasketItemAsync.rejected, (state, action) => {
+        });
+        builder.addCase(addBasketItemAsync.rejected, (state) => {
             state.status = 'idle';
-        })
+        });
         builder.addCase(removeBasketItemAsync.pending, (state, action) => {    // Mapping to removeBasketItemAsync, modify status
-            state.status = 'pedingRemoveItem' + action.meta.arg.productId;
+            state.status = 'pedingRemoveItem' + action.meta.arg.productId + action.meta.arg.name;
+        });
+        builder.addCase(removeBasketItemAsync.fulfilled, (state, action) => {
+            const {productId, quantity} = action.meta.arg;
+            const ItemIndex = state.basket?.items.findIndex(i => i.productId === productId);
+            if (ItemIndex === -1 || ItemIndex === undefined) return;    // Safety check, in case basket is empty
+            state.basket!.items[ItemIndex].quantity -= quantity;
+            if (state.basket?.items[ItemIndex].quantity === 0) {
+                state.basket.items.splice(ItemIndex, 1); // Remove item from basket if quantity is 0
+            }
+            state.status = 'idle';  
+        });
+        builder.addCase(removeBasketItemAsync.rejected, (state) => {
+            state.status = 'idle';
         });
     })
 }) 
 
-export const {setBasket, removeItem} = basketSlice.actions; // Export the actions specifc reducer
+export const {setBasket} = basketSlice.actions; // Export the actions specifc reducer
