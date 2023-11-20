@@ -1,30 +1,26 @@
 import { Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Product } from "../../app/models/product";
-import agent from "../../app/api/agent";
 import NotFound from "../../app/errors/NotFound";
 import LoadingComponent from "../../app/layout/LoadingComponent";
 import { LoadingButton } from "@mui/lab";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { addBasketItemAsync, removeBasketItemAsync } from "../basket/basketSlice";
+import { fetchProductAsync, productSelectors } from "./catalogSlice";
 
 export default function ProductDetails() {
     // const { basket, setBasket, removeItem } = useStoreContext(); // React context
     const {basket, status} = useAppSelector(state => state.basket);  // Redux
     const dispatch = useAppDispatch();
     const { id } = useParams<{ id: string }>();
-    const [product, setProduct] = useState<Product | null>(null);
-    const [loading, setLoading] = useState(true);
+    const product = useAppSelector(state => productSelectors.selectById(state, id!));
+    const {status: productStatus} = useAppSelector(state => state.catalog);
     const [quantity, setQuantity] = useState(0);
     const item = basket?.items.find(i => i.productId === product?.id); // BasketItem instead of product, because it is a basket related feature
                                                                        // product is null when first time render
     useEffect(() => {
         if (item) setQuantity(item.quantity);       // Only excute in second render, becase in first time the product is null
-        id && agent.Catalog.details(parseInt(id))
-            .then(response => setProduct(response)) // Load product
-            .catch(error => console.log(error))
-            .finally(() => setLoading(false));
+        if (!product && id) dispatch(fetchProductAsync(parseInt(id)));
     }, [id, item])
 
     function handleInputChange(event: any) {
@@ -43,7 +39,7 @@ export default function ProductDetails() {
         }
     }
 
-    if (loading) return <LoadingComponent message="Loading product..." />
+    if (productStatus.includes('pending')) return <LoadingComponent message="Loading product..." />
     if (!product) return <NotFound />
 
     return (
